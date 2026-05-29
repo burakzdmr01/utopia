@@ -22,7 +22,13 @@ def signup_view(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
         email    = request.POST.get('email')
-        user     = User.objects.create_user(username=username, password=password, email=email)
+
+        if User.objects.filter(username=username).exists():
+            return render(request, 'users/signup.html', {
+                'error': 'This username is already taken. Please choose another.'
+            })
+
+        user = User.objects.create_user(username=username, password=password, email=email)
         login(request, user)
         return redirect('products:product_list')
     return render(request, 'users/signup.html')
