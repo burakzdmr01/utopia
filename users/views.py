@@ -8,9 +8,17 @@ def login_view(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
         user     = authenticate(request, username=username, password=password)
+        
         if user:
             login(request, user)
             return redirect('products:product_list')
+        else:
+            # Giriş başarısız olduğunda sayfanın boş yenilenmesini engelleyen 
+            # ve login.html'e hata mesajını gönderen kısım:
+            return render(request, 'users/login.html', {
+                'error': 'Invalid username or password.'
+            })
+            
     return render(request, 'users/login.html')
 
 def logout_view(request):
@@ -31,6 +39,7 @@ def signup_view(request):
         user = User.objects.create_user(username=username, password=password, email=email)
         login(request, user)
         return redirect('products:product_list')
+        
     return render(request, 'users/signup.html')
 
 @login_required
