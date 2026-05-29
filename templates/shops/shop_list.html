@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Utopia — Our Shops{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2 class="fw-bold">Our Shops</h2>
+        <p class="text-muted">Find a Utopia store near you</p>
+    </div>
+</div>
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for shop in shops %}
+    <div class="col">
+        <div class="card h-100 shadow-sm">
+            {% if shop.image %}
+                <img src="{{ shop.image.url }}" class="card-img-top" style="height:200px;object-fit:cover;">
+            {% else %}
+                <div class="bg-dark d-flex align-items-center justify-content-center" style="height:200px;">
+                    <i class="bi bi-shop text-white fs-1"></i>
+                </div>
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title fw-bold">{{ shop.name }}</h5>
+                <p class="text-muted mb-1"><i class="bi bi-geo-alt"></i> {{ shop.city }}</p>
+                <p class="text-muted mb-1"><i class="bi bi-map"></i> {{ shop.address }}</p>
+                <p class="text-muted mb-1"><i class="bi bi-telephone"></i> {{ shop.phone }}</p>
+                <p class="text-muted mb-1"><i class="bi bi-envelope"></i> {{ shop.email }}</p>
+                <p class="text-muted"><i class="bi bi-clock"></i> {{ shop.working_hours }}</p>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <p class="text-muted">No shops found.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

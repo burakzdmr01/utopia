@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile — Utopia{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-body text-center p-4">
+                <div class="bg-dark rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width:80px;height:80px;">
+                    <i class="bi bi-person text-white fs-2"></i>
+                </div>
+                <h5 class="fw-bold">{{ user.username }}</h5>
+                <p class="text-muted">{{ user.email }}</p>
+                <span class="badge bg-dark">{{ user.role }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <h4 class="fw-bold mb-4">My Orders</h4>
+        {% for order in orders %}
+        <div class="card mb-3 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h6 class="fw-bold mb-0">Order #{{ order.id }}</h6>
+                    <span class="badge bg-{% if order.status == 'delivered' %}success{% elif order.status == 'cancelled' %}danger{% else %}warning{% endif %}">
+                        {{ order.status|title }}
+                    </span>
+                </div>
+                <p class="text-muted mb-1 mt-2">{{ order.created_at|date:"M d, Y" }}</p>
+                <p class="fw-bold mb-0">Total: ${{ order.total_price }}</p>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-muted">No orders yet.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
