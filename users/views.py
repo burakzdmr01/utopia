@@ -19,8 +19,10 @@ def login_view(request):
                 'error': 'Invalid username or password.'
             })
             
-    return render(request, 'users/login.html')
-
+	return render(request, 'users/login.html', {
+   	 'error': 'Invalid username or password.',
+    	'username': username,  
+	})
 def logout_view(request):
     logout(request)
     return redirect('products:product_list')
