@@ -2,6 +2,24 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import Cart, CartItem, Order, OrderItem
 from products.models import Product
+from django.http import JsonResponse
+
+@login_required
+def add_to_cart_ajax(request, product_id):
+    if request.method == 'POST':
+        product      = get_object_or_404(Product, id=product_id)
+        cart, _      = Cart.objects.get_or_create(user=request.user)
+        item, created = CartItem.objects.get_or_create(cart=cart, product=product)
+        if not created:
+            item.quantity += 1
+            item.save()
+        cart_count = cart.items.count()
+        return JsonResponse({
+            'success': True,
+            'cart_count': cart_count,
+            'message': f'{product.name} added to cart!'
+        })
+    return JsonResponse({'success': False}, status=400)
 
 @login_required
 def cart_view(request):
