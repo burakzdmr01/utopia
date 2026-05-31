@@ -18,14 +18,14 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item">
-		    <a class="nav-link" href="/?page=1">Products</a>
+                    <a class="nav-link" href="/?page=1">Products</a>
                 </li>
-		 <li class="nav-item">
-       			 <a class="nav-link" href="/campaigns/">Campaigns</a>
-   		 </li>
- 		<li class="nav-item">
-   		    <a class="nav-link" href="/shops/">Shops</a>
-		</li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/campaigns/">Campaigns</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/shops/">Shops</a>
+                </li>
             </ul>
             <form class="d-flex me-3" method="GET" action="/">
                 <input class="form-control me-2" type="search" name="q" placeholder="Search..." value="{{ query|default:'' }}">
@@ -36,6 +36,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/orders/cart/">
                             <i class="bi bi-cart"></i> Cart
+                            <span class="badge bg-danger rounded-pill" id="cart-count" style="display:none;"></span>
                         </a>
                     </li>
                     <li class="nav-item dropdown">
@@ -46,9 +47,8 @@
                             <li><a class="dropdown-item" href="/users/profile/">Profile</a></li>
                             <li><a class="dropdown-item" href="/orders/my-orders/">My Orders</a></li>
                             {% if user.is_staff %}
-			    <li><a class="dropdown-item" href="/admin/">Admin Panel</a></li>
-                            <li><a class="dropdown-item" href="/shops/">Shops</a></li>
-			    {% endif %}
+                            <li><a class="dropdown-item" href="/admin/">Admin Panel</a></li>
+                            {% endif %}
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="/users/logout/">Logout</a></li>
                         </ul>
@@ -84,7 +84,49 @@
     </div>
 </footer>
 
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="cartToast" class="toast align-items-center text-bg-dark border-0" role="alert">
+        <div class="d-flex">
+            <div class="toast-body" id="toastMessage">Added to cart!</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+function addToCartAjax(productId, btn) {
+    fetch(`/orders/cart/add-ajax/${productId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('toastMessage').textContent = data.message;
+            const toast = new bootstrap.Toast(document.getElementById('cartToast'));
+            toast.show();
+
+            const badge = document.getElementById('cart-count');
+            badge.textContent = data.cart_count;
+            badge.style.display = 'inline';
+
+            btn.classList.add('btn-success');
+            btn.innerHTML = '<i class="bi bi-check"></i>';
+            setTimeout(() => {
+                btn.classList.remove('btn-success');
+                btn.innerHTML = '<i class="bi bi-cart-plus"></i>';
+            }, 1500);
+        }
+    })
+    .catch(err => console.error(err));
+}
+</script>
+
 {% block scripts %}{% endblock %}
 </body>
 </html>
