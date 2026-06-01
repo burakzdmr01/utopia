@@ -14,15 +14,15 @@ def get_exchange_rates():
     try:
         response = req.get('https://api.exchangerate-api.com/v4/latest/USD', timeout=5)
         data = response.json()
+        print("API rates:", data['rates']['EUR'], data['rates']['GBP'], data['rates']['TRY'])
         return {
             'EUR': round(data['rates']['EUR'], 2),
             'GBP': round(data['rates']['GBP'], 2),
             'TRY': round(data['rates']['TRY'], 2),
         }
-    except Exception:
-        # Fallback rates if API is unavailable
+    except Exception as e:
+        print("API error:", e)
         return {'EUR': 0.92, 'GBP': 0.79, 'TRY': 32.5}
-
 
 def product_list(request):
     """
@@ -76,12 +76,21 @@ def product_detail(request, slug):
     product = get_object_or_404(Product, slug=slug, is_active=True)
     reviews = product.reviews.all()
     rates   = get_exchange_rates()
-    return render(request, 'products/product_detail.html', {
-        'product': product,
-        'reviews': reviews,
-        'rates':   rates,
-    })
 
+    base_price = float(product.discounted_price() if product.is_on_sale() else product.price)
+
+    converted = {
+        'eur': round(base_price * rates['EUR'], 2),
+        'gbp': round(base_price * rates['GBP'], 2),
+        'try': round(base_price * rates['TRY'], 2),
+    }
+
+    return render(request, 'products/product_detail.html', {
+        'product':   product,
+        'reviews':   reviews,
+        'rates':     rates,
+        'converted': converted,
+    })
 
 def campaign_list(request):
     """
