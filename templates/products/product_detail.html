@@ -41,23 +41,16 @@
         {% else %}
             <a href="/users/login/" class="btn btn-outline-dark btn-lg mt-2">Login to Add to Cart</a>
         {% endif %}
+
 <!-- Currency Converter -->
 <div class="mt-3 p-3 bg-light rounded">
     <p class="fw-bold mb-2"><i class="bi bi-currency-exchange"></i> Price in other currencies:</p>
     <div class="d-flex gap-3 flex-wrap">
-        {% if product.is_on_sale %}
-            <span class="badge bg-dark fs-6">€{{ product.discounted_price|floatformat:2 }} × {{ rates.EUR }} = <strong>€{% widthratio product.discounted_price 1 rates.EUR %}</strong></span>
-            <span class="badge bg-dark fs-6">£<strong>{% widthratio product.discounted_price 1 rates.GBP %}</strong></span>
-            <span class="badge bg-dark fs-6">₺<strong>{% widthratio product.discounted_price 1 rates.TRY %}</strong></span>
-        {% else %}
-            <span class="badge bg-dark fs-6">€<strong>{% widthratio product.price 1 rates.EUR %}</strong></span>
-            <span class="badge bg-dark fs-6">£<strong>{% widthratio product.price 1 rates.GBP %}</strong></span>
-            <span class="badge bg-dark fs-6">₺<strong>{% widthratio product.price 1 rates.TRY %}</strong></span>
-        {% endif %}
+        <span class="badge bg-dark fs-6">€ {{ converted.eur }}</span>
+        <span class="badge bg-dark fs-6">£ {{ converted.gbp }}</span>
+        <span class="badge bg-dark fs-6">₺ {{ converted.try }}</span>
     </div>
     <small class="text-muted">Live exchange rates via ExchangeRate-API</small>
-</div>
-    </div>
 </div>
 
 <!-- Yorumlar -->
