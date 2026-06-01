@@ -2,6 +2,19 @@ from django.shortcuts import render, get_object_or_404
 from .models import Product, Category
 from django.core.paginator import Paginator
 from django.utils import timezone
+import requests as req
+
+def get_exchange_rates():
+    try:
+        response = req.get('https://api.exchangerate-api.com/v4/latest/USD', timeout=5)
+        data = response.json()
+        return {
+            'EUR': round(data['rates']['EUR'], 2),
+            'GBP': round(data['rates']['GBP'], 2),
+            'TRY': round(data['rates']['TRY'], 2),
+        }
+    except:
+        return {'EUR': 0.92, 'GBP': 0.79, 'TRY': 32.5}
 
 def product_list(request):
     products   = Product.objects.filter(is_active=True)
@@ -42,10 +55,12 @@ def product_list(request):
 def product_detail(request, slug):
     product = get_object_or_404(Product, slug=slug, is_active=True)
     reviews = product.reviews.all()
+    rates   = get_exchange_rates()
     return render(request, 'products/product_detail.html', {
         'product': product,
         'reviews': reviews,
-    })
+	'rates': rates,
+})
 
 from .models import Product, Category, Campaign
 
