@@ -17,11 +17,11 @@
                     {% csrf_token %}
                     <div class="mb-3">
                         <label class="form-label fw-bold">Username</label>
-                        <input type="text" name="username" class="form-control" placeholder="Enter username" value="{{ username|default:'' }}" required>
+                        {{ form.username }}
                     </div>
                     <div class="mb-4">
                         <label class="form-label fw-bold">Password</label>
-                        <input type="password" name="password" class="form-control" placeholder="Enter password" required>
+                        {{ form.password }}
                     </div>
                     <button type="submit" class="btn btn-dark w-100 py-2">Login</button>
                 </form>
@@ -34,3 +34,4 @@
     </div>
 </div>
 {% endblock %}
+

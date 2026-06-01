@@ -30,7 +30,7 @@ def product_list(request):
     Supports search by name and filtering by category slug.
     Also provides data for the homepage (new arrivals, campaigns, hot deals).
     """
-    products   = Product.objects.filter(is_active=True)
+    products = Product.objects.filter(is_active=True).order_by('-created_at')
     categories = Category.objects.filter(parent=None)
 
     # Search filter

@@ -8,22 +8,24 @@
         <div class="card shadow-sm border-0 mt-4">
             <div class="card-body p-5">
                 <h3 class="fw-bold mb-4 text-center">Create Account</h3>
-		{% if error %}
-		<div class="alert alert-danger">{{ error }}</div>
-		{% endif %}
+
+                {% if error %}
+                <div class="alert alert-danger">{{ error }}</div>
+                {% endif %}
+
                 <form method="POST">
                     {% csrf_token %}
                     <div class="mb-3">
                         <label class="form-label fw-bold">Username</label>
-                        <input type="text" name="username" class="form-control" placeholder="Choose a username" required>
+                        {{ form.username }}
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold">Email</label>
-                        <input type="email" name="email" class="form-control" placeholder="Enter your email">
+                        {{ form.email }}
                     </div>
                     <div class="mb-4">
                         <label class="form-label fw-bold">Password</label>
-                        <input type="password" name="password" class="form-control" placeholder="Choose a password" required>
+                        {{ form.password }}
                     </div>
                     <button type="submit" class="btn btn-dark w-100 py-2">Sign Up</button>
                 </form>
@@ -36,3 +38,4 @@
     </div>
 </div>
 {% endblock %}
+

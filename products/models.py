@@ -1,5 +1,7 @@
 from django.db import models
+from decimal import Decimal
 from users.models import User
+
 
 class Category(models.Model):
     parent      = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='subcategories')
@@ -15,6 +17,7 @@ class Category(models.Model):
 
     class Meta:
         verbose_name_plural = 'Categories'
+
 
 class Product(models.Model):
     seller      = models.ForeignKey(User, on_delete=models.CASCADE, related_name='products')
@@ -33,15 +36,16 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
-from decimal import Decimal
-
-def discounted_price(self):
-    if self.discount > 0:
-        return round(self.price * (1 - Decimal(self.discount) / 100), 2)
-    return self.price
+    def discounted_price(self):
+        """Returns the price after discount is applied."""
+        if self.discount > 0:
+            return round(float(self.price) * (1 - self.discount / 100), 2)
+        return self.price
 
     def is_on_sale(self):
+        """Returns True if product has an active discount."""
         return self.discount > 0
+
 
 class Campaign(models.Model):
     title       = models.CharField(max_length=200)
