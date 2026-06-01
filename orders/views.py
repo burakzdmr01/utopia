@@ -6,6 +6,7 @@ from django.http import JsonResponse
 
 @login_required
 def add_to_cart_ajax(request, product_id):
+    """AJAX endpoint for adding a product to cart. Returns JSON response."""
     if request.method == 'POST':
         product      = get_object_or_404(Product, id=product_id)
         cart, _      = Cart.objects.get_or_create(user=request.user)
@@ -23,11 +24,13 @@ def add_to_cart_ajax(request, product_id):
 
 @login_required
 def cart_view(request):
+	    """Displays the current user's shopping cart."""
     cart, _ = Cart.objects.get_or_create(user=request.user)
     return render(request, 'orders/cart.html', {'cart': cart})
 
 @login_required
 def add_to_cart(request, product_id):
+	    """Adds a product to the cart or increments quantity if already present."""
     product  = get_object_or_404(Product, id=product_id)
     cart, _  = Cart.objects.get_or_create(user=request.user)
     item, created = CartItem.objects.get_or_create(cart=cart, product=product)
@@ -38,12 +41,14 @@ def add_to_cart(request, product_id):
 
 @login_required
 def remove_from_cart(request, item_id):
+	    """Removes a specific item from the cart."""
     item = get_object_or_404(CartItem, id=item_id, cart__user=request.user)
     item.delete()
     return redirect('orders:cart')
 
 @login_required
 def checkout_view(request):
+	    """Handles checkout process and creates an order from cart items."""
     cart = get_object_or_404(Cart, user=request.user)
     if request.method == 'POST':
         order = Order.objects.create(
@@ -64,5 +69,6 @@ def checkout_view(request):
 
 @login_required
 def order_list(request):
+	    """Lists all orders for the currently logged-in user."""
     orders = request.user.orders.all().order_by('-created_at')
     return render(request, 'orders/order_list.html', {'orders': orders})

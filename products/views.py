@@ -1,10 +1,16 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Product, Category
 from django.core.paginator import Paginator
 from django.utils import timezone
+from .models import Product, Category, Campaign
 import requests as req
 
+
 def get_exchange_rates():
+    """
+    Fetches live exchange rates from ExchangeRate-API.
+    Returns EUR, GBP, and TRY rates relative to USD.
+    Falls back to static rates if the API is unavailable.
+    """
     try:
         response = req.get('https://api.exchangerate-api.com/v4/latest/USD', timeout=5)
         data = response.json()
@@ -13,32 +19,41 @@ def get_exchange_rates():
             'GBP': round(data['rates']['GBP'], 2),
             'TRY': round(data['rates']['TRY'], 2),
         }
-    except:
+    except Exception:
+        # Fallback rates if API is unavailable
         return {'EUR': 0.92, 'GBP': 0.79, 'TRY': 32.5}
 
-def product_list(request):
-    products   = Product.objects.filter(is_active=True)
-    categories = Category.objects.filter(parent=None)  # sadece ana kategoriler
 
+def product_list(request):
+    """
+    Displays the main product listing page.
+    Supports search by name and filtering by category slug.
+    Also provides data for the homepage (new arrivals, campaigns, hot deals).
+    """
+    products   = Product.objects.filter(is_active=True)
+    categories = Category.objects.filter(parent=None)
+
+    # Search filter
     query = request.GET.get('q')
     if query:
         products = products.filter(name__icontains=query)
 
+    # Category filter — includes subcategories
     category_slug = request.GET.get('category')
     if category_slug:
         category = Category.objects.get(slug=category_slug)
-        # alt kategorileri de dahil et
         subcategories = category.subcategories.all()
         if subcategories:
             products = products.filter(category__in=[category] + list(subcategories))
         else:
             products = products.filter(category=category)
 
+    # Pagination — 9 products per page
     paginator = Paginator(products, 9)
     page      = request.GET.get('page')
     products  = paginator.get_page(page)
 
-    # Ana sayfa için ekstra veriler
+    # Homepage extras
     new_products      = Product.objects.filter(is_active=True).order_by('-created_at')[:8]
     campaign_products = Product.objects.filter(is_active=True, campaigns__is_active=True).distinct()[:8]
     campaigns         = Campaign.objects.filter(is_active=True)
@@ -52,25 +67,36 @@ def product_list(request):
         'campaigns':         campaigns,
     })
 
+
 def product_detail(request, slug):
+    """
+    Displays a single product's detail page.
+    Includes reviews and live currency conversion rates.
+    """
     product = get_object_or_404(Product, slug=slug, is_active=True)
     reviews = product.reviews.all()
     rates   = get_exchange_rates()
     return render(request, 'products/product_detail.html', {
         'product': product,
         'reviews': reviews,
-	'rates': rates,
-})
+        'rates':   rates,
+    })
 
-from .models import Product, Category, Campaign
 
 def campaign_list(request):
+    """
+    Lists all active campaigns.
+    """
     campaigns = Campaign.objects.filter(is_active=True)
     return render(request, 'products/campaign_list.html', {
         'campaigns': campaigns,
     })
 
+
 def campaign_detail(request, pk):
+    """
+    Displays a single campaign and its associated products.
+    """
     campaign = get_object_or_404(Campaign, pk=pk, is_active=True)
     products = campaign.products.filter(is_active=True)
     return render(request, 'products/campaign_detail.html', {
