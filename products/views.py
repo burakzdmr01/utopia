@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
 from django.utils import timezone
-from .models import Product, Category, Campaign
+from .models import Product, Category, Campaign, ProductView
 import requests as req
 
 
@@ -67,19 +67,21 @@ def product_list(request):
         'campaigns':         campaigns,
     })
 
-
 def product_detail(request, slug):
-    """
-    Displays a single product's detail page.
-    Includes reviews and live currency conversion rates.
-    """
+    """Displays a single product's detail page."""
     product = get_object_or_404(Product, slug=slug, is_active=True)
     reviews = product.reviews.all()
     rates   = get_exchange_rates()
 
-    base_price = float(product.discounted_price() if product.is_on_sale() else product.price)
+    # Görüntülenmeyi kaydet
+    ProductView.objects.create(
+        product    = product,
+        user       = request.user if request.user.is_authenticated else None,
+        ip_address = request.META.get('REMOTE_ADDR'),
+    )
 
-    converted = {
+    base_price = float(product.discounted_price() if product.is_on_sale() else product.price)
+    converted  = {
         'eur': round(base_price * rates['EUR'], 2),
         'gbp': round(base_price * rates['GBP'], 2),
         'try': round(base_price * rates['TRY'], 2),
@@ -91,6 +93,7 @@ def product_detail(request, slug):
         'rates':     rates,
         'converted': converted,
     })
+
 
 def campaign_list(request):
     """

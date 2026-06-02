@@ -59,3 +59,26 @@ class Campaign(models.Model):
 
     def __str__(self):
         return self.title
+
+class ProductImage(models.Model):
+    """Additional images for a product."""
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
+    image   = models.ImageField(upload_to='products/')
+    order   = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['order']
+
+    def __str__(self):
+        return f"{self.product.name} — image {self.order}"
+
+
+class ProductView(models.Model):
+    """Tracks product page views."""
+    product    = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='views')
+    user       = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    viewed_at  = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.product.name} viewed at {self.viewed_at}"

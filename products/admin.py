@@ -1,5 +1,12 @@
 from django.contrib import admin
-from .models import Category, Product
+from .models import Category, Product, Campaign, ProductImage, ProductView
+
+@admin.register(ProductView)
+class ProductViewAdmin(admin.ModelAdmin):
+    list_display  = ('product', 'user', 'ip_address', 'viewed_at')
+    list_filter   = ('viewed_at',)
+    search_fields = ('product__name', 'user__username')
+    readonly_fields = ('product', 'user', 'ip_address', 'viewed_at')
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
