@@ -104,13 +104,31 @@ def campaign_list(request):
         'campaigns': campaigns,
     })
 
-
 def campaign_detail(request, pk):
     """
-    Displays a single campaign and its associated products.
+    Kampanyayı ve ona bağlı ürünleri çeker, indirimli fiyatları arka planda hesaplar.
     """
+    # Aktif olan kampanyayı ID (pk) ile bulur, yoksa 404 verir
     campaign = get_object_or_404(Campaign, pk=pk, is_active=True)
+    
+    # Kampanyaya bağlı ve aktif olan ürünleri çeker
     products = campaign.products.filter(is_active=True)
+    
+    # Eğer views'a ürün gelmediyse, fallback (yedek) ilişkiden zorla çekmeyi dener
+    if not products.exists():
+        products = campaign.product_set.filter(is_active=True)
+        
+    # HER ÜRÜN İÇİN İNDİRİMLİ FİYATI BURADA BASİTÇE HESAPLIYORUZ
+    for product in products:
+        if campaign.discount:
+            # Örn: 100$ fiyat ve %20 indirim -> indirim_miktari = 20$
+            discount_amount = (product.price * campaign.discount) / 100
+            # Net Fiyat = 100 - 20 = 80$ (Kuruş uyuşmazlığı olmasın diye 2 basamağa yuvarlıyoruz)
+            product.discounted_price = round(product.price - discount_amount, 2)
+        else:
+            # Eğer kampanya indirimi 0 ise indirimli fiyat normal fiyata eşittir
+            product.discounted_price = product.price
+
     return render(request, 'products/campaign_detail.html', {
         'campaign': campaign,
         'products': products,
