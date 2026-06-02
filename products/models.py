@@ -46,16 +46,19 @@ class Product(models.Model):
         """Returns True if product has an active discount."""
         return self.discount > 0
 
-
 class Campaign(models.Model):
-    title       = models.CharField(max_length=200)
+    title = models.CharField(max_length=200)
     description = models.TextField()
-    discount    = models.PositiveIntegerField(help_text='Discount percentage')
-    products    = models.ManyToManyField(Product, related_name='campaigns')
-    image       = models.ImageField(upload_to='campaigns/', blank=True, null=True)
-    start_date  = models.DateTimeField()
-    end_date    = models.DateTimeField()
-    is_active   = models.BooleanField(default=True)
+    discount = models.PositiveIntegerField(help_text='Discount percentage')
+    products = models.ManyToManyField(Product, related_name='campaigns')
+
+    image = models.ImageField(upload_to='campaigns/', blank=True, null=True)
+    image_2 = models.ImageField(upload_to='campaigns/', blank=True, null=True)
+    image_3 = models.ImageField(upload_to='campaigns/', blank=True, null=True)
+
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.title

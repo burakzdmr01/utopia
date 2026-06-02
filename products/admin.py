@@ -19,3 +19,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_filter   = ('category', 'is_active')
     search_fields = ('name',)
     prepopulated_fields = {'slug': ('name',)}
+
+@admin.register(Campaign)
+class CampaignAdmin(admin.ModelAdmin):
+    list_display = ('title', 'discount', 'is_active')

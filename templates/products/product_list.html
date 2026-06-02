@@ -1,59 +1,47 @@
 {% extends 'base.html' %}
-
-{% block title %}Utopia — Technology Store{% endblock %}
+{% load static %} {% block title %}Utopia — Technology Store{% endblock %}
 
 {% block content %}
 
 {% if not request.GET.q and not request.GET.category and not request.GET.page %}
 
-<!-- HERO SLIDER -->
-<div id="heroCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
+<div id="utopiaHtmlSlider" class="carousel slide mb-5 shadow-sm rounded overflow-hidden" data-bs-ride="carousel">
     <div class="carousel-indicators">
-        {% for campaign in campaigns %}
-        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active"{% endif %}></button>
-        {% endfor %}
+        <button type="button" data-bs-target="#utopiaHtmlSlider" data-bs-slide-to="0" class="active"></button>
+        <button type="button" data-bs-target="#utopiaHtmlSlider" data-bs-slide-to="1"></button>
+        <button type="button" data-bs-target="#utopiaHtmlSlider" data-bs-slide-to="2"></button>
     </div>
-    <div class="carousel-inner rounded-3 shadow">
-        {% for campaign in campaigns %}
-        <div class="carousel-item {% if forloop.first %}active{% endif %}">
-            {% if campaign.image %}
-                <img src="{{ campaign.image.url }}" class="d-block w-100" style="height:420px;object-fit:cover;">
-            {% else %}
-                <div class="bg-dark d-flex align-items-center justify-content-center" style="height:420px;">
-                    <div class="text-center text-white p-5">
-                        <h1 class="display-4 fw-bold">{{ campaign.title }}</h1>
-                        <p class="lead">{{ campaign.description }}</p>
-                        <span class="badge bg-danger fs-4 px-4 py-2">{{ campaign.discount }}% OFF</span>
-                    </div>
-                </div>
-            {% endif %}
-            <div class="carousel-caption d-none d-md-block">
-                <h2 class="fw-bold">{{ campaign.title }}</h2>
-                <p>{{ campaign.description }}</p>
-                <a href="/campaigns/{{ campaign.pk }}/" class="btn btn-light btn-lg">Shop Now</a>
-            </div>
+
+	<div class="carousel-inner">
+    
+    	<div class="carousel-item active" data-bs-interval="4000">
+            <a href="/campaigns/1/">
+                <img src="{% static 'images/kampanya1.jpg' %}" class="d-block w-100" alt="Summer Tech Sale" style="height: 635px; object-fit: cover;">
+            </a>
         </div>
-        {% empty %}
-        <div class="carousel-item active">
-            <div class="bg-dark d-flex align-items-center justify-content-center rounded-3" style="height:420px;">
-                <div class="text-center text-white p-5">
-                    <h1 class="display-4 fw-bold">⚡ Welcome to Utopia</h1>
-                    <p class="lead">Your ultimate technology destination</p>
-                    <a href="#new-products" class="btn btn-light btn-lg">Explore Now</a>
-                </div>
-            </div>
+	<div class="carousel-item" data-bs-interval="4000">
+             <a href="/campaigns/2/">
+                 <img src="{% static 'images/kampanya2.jpg' %}" class="d-block w-100" alt="Gaming Week" style="height: 635px; object-fit: cover;">
+             </a>
         </div>
-        {% endfor %}
+    </div>	
+    <div class="carousel-item" data-bs-interval="4000">
+        <a href="/campaigns/3/">
+            <img src="{% static 'images/kampanya3.jpg' %}" class="d-block w-100" alt="Back to School" style="height: 635px; object-fit: cover;">
+        </a>
     </div>
-    <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+
+</div>
+    </div>
+
+    <button class="carousel-control-prev" type="button" data-bs-target="#utopiaHtmlSlider" data-bs-slide="prev">
         <span class="carousel-control-prev-icon"></span>
     </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+    <button class="carousel-control-next" type="button" data-bs-target="#utopiaHtmlSlider" data-bs-slide="next">
         <span class="carousel-control-next-icon"></span>
     </button>
 </div>
 
-<!-- ANA KATEGORİLER -->
 <div class="mb-5">
     <h4 class="fw-bold mb-3">Shop by Category</h4>
     <div class="row row-cols-2 row-cols-md-4 g-3">
@@ -85,7 +73,6 @@
     </div>
 </div>
 
-<!-- YENİ ÜRÜNLER -->
 <div class="mb-5" id="new-products">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h4 class="fw-bold mb-0">🆕 New Arrivals</h4>
@@ -132,7 +119,6 @@
     </div>
 </div>
 
-<!-- KAMPANYA ÜRÜNLERİ -->
 {% if campaign_products %}
 <div class="mb-5">
     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -183,7 +169,6 @@
 
 {% else %}
 
-<!-- ARAMA / FİLTRE SONUÇLARI -->
 <div class="row">
     <div class="col-md-3">
         <h5 class="fw-bold mb-3">Categories</h5>
@@ -248,7 +233,6 @@
             {% endfor %}
         </div>
 
-        <!-- Pagination -->
         <div class="d-flex justify-content-center mt-4">
             <nav>
                 <ul class="pagination">
@@ -285,4 +269,3 @@
     .category-card:hover { transform: translateY(-4px); background-color: #f8f9fa; }
 </style>
 {% endblock %}
-                 

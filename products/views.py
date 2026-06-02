@@ -48,7 +48,7 @@ def product_list(request):
         else:
             products = products.filter(category=category)
 
-    # Pagination — 9 products per page
+    # Pagination — 18 products per page
     paginator = Paginator(products, 18)
     page      = request.GET.get('page')
     products  = paginator.get_page(page)
@@ -56,7 +56,7 @@ def product_list(request):
     # Homepage extras
     new_products      = Product.objects.filter(is_active=True).order_by('-created_at')[:8]
     campaign_products = Product.objects.filter(is_active=True, campaigns__is_active=True).distinct()[:8]
-    campaigns         = Campaign.objects.filter(is_active=True)
+    campaigns = Campaign.objects.all()
 
     return render(request, 'products/product_list.html', {
         'products':          products,
