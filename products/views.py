@@ -49,7 +49,7 @@ def product_list(request):
             products = products.filter(category=category)
 
     # Pagination — 9 products per page
-    paginator = Paginator(products, 9)
+    paginator = Paginator(products, 18)
     page      = request.GET.get('page')
     products  = paginator.get_page(page)
 
