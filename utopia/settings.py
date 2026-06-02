@@ -207,7 +207,6 @@ REST_FRAMEWORK = {
 
 from decouple import config
 
-}
 
 STORAGES = {
     'default': {
